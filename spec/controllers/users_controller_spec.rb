@@ -65,11 +65,26 @@ describe UsersController do
         assigns(:user).should be_persisted
       end
 
-      it "redirects to the created user" do
+      # it "redirects to the todo lists path" do
+      #   post :create, {:user => valid_attributes}, valid_session
+      #   response.should redirect_to(todo_lists_path)
+      # end
+
+      # it "sets the flash success message" do
+      #   post :create, {:user => valid_attributes}, valid_session
+      #   expect(flash[:success]).to eq("Thanks for signing up!")
+      # end
+
+      it "sets the session user_id to the created user" do
         post :create, {:user => valid_attributes}, valid_session
-        response.should redirect_to(User.last)
+        expect(session[:user_id]).to eq(User.find_by(email: valid_attributes["email"]).id)
       end
     end
+    #   it "redirects to the created user" do
+    #     post :create, {:user => valid_attributes}, valid_session
+    #     response.should redirect_to(User.last)
+    #   end
+    # end
 
     describe "with invalid params" do
       it "assigns a newly created but unsaved user as @user" do
