@@ -1,12 +1,16 @@
 require 'spec_helper'
 
 describe "Editing todo lists" do
+	let(:user) { create(:user) }
 	let!(:todo_list) 		{ TodoList.create(title: "Groceries", description: "Grocery list.")}
 
+	before do
+		sign_in user, password: "treehouse1"
+	end	
+	
 	def update_todo_list(options={})
 		options[:title] ||= "My todo list"
 		options[:description] ||= "This is my todo list."
-
 		todo_list = options[:todo_list]
 
 		visit "/todo_lists"
@@ -16,10 +20,12 @@ describe "Editing todo lists" do
 
 		fill_in "Title", with: options[:title]
 		fill_in "Description", with: options[:description]
-		click_button "Update Todo list"
+		click_button "Update Todo list"	
 
 	end
 
+
+	
 	it "updates a todo list successfully with correct information" do
 
 		update_todo_list 	todo_list: todo_list, 
