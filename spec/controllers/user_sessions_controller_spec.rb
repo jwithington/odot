@@ -8,23 +8,22 @@ describe UserSessionsController do
       response.should be_success
     end
 
-    it "renders the new template" do 
+    it "renders the new template" do
       get 'new'
-      expect(response).to render_template('new') 
+      expect(response).to render_template('new')
     end
-
   end
 
   describe "POST 'create'" do
     context "with correct credentials" do
-      let!(:user) {User.create(first_name: "Jason", last_name: "Seifer", email: "jason@teamtreehouse.com", password: "treehouse1", password_confirmation: "treehouse1")}
-      
+      let!(:user) { User.create(first_name: "Jason", last_name: "Seifer", email: "jason@teamtreehouse.com", password: "treehouse1", password_confirmation: "treehouse1") }
+
       it "redirects to the todo list path" do
         post :create, email: "jason@teamtreehouse.com", password: "treehouse1"
         expect(response).to be_redirect
         expect(response).to redirect_to(todo_lists_path)
       end
-    
+
       it "finds the user" do
         expect(User).to receive(:find_by).with({email: "jason@teamtreehouse.com"}).and_return(user)
         post :create, email: "jason@teamtreehouse.com", password: "treehouse1"
@@ -35,7 +34,7 @@ describe UserSessionsController do
         expect(user).to receive(:authenticate)
         post :create, email: "jason@teamtreehouse.com", password: "treehouse1"
       end
-      
+
       it "sets the user_id in the session" do
         post :create, email: "jason@teamtreehouse.com", password: "treehouse1"
         expect(session[:user_id]).to eq(user.id)
@@ -46,16 +45,16 @@ describe UserSessionsController do
         expect(flash[:success]).to eq("Thanks for logging in!")
       end
     end
-    
+
     shared_examples_for "denied login" do
       it "renders the new template" do
         post :create, email: email, password: password
-        expect(response).to render_template('new') 
+        expect(response).to render_template('new')
       end
 
       it "sets the flash error message" do
         post :create, email: email, password: password
-        expect(flash[:error]).to eq("We had a problem logging you in. Please check your email and password.")
+        expect(flash[:error]).to eq("There was a problem logging in. Please check your email and password.")
       end
     end
 
@@ -66,18 +65,48 @@ describe UserSessionsController do
     end
 
     context "with an incorrect password" do
-      let!(:user) {User.create(first_name: "Jason", last_name: "Seifer", email: "jason@teamtreehouse.com", password: "treehouse1", password_confirmation: "treehouse1")}
+      let!(:user) { User.create(first_name: "Jason", last_name: "Seifer", email: "jason@teamtreehouse.com", password: "treehouse1", password_confirmation: "treehouse1") }
       let(:email) { user.email }
-      let(:password) { "incorrect" }
-      it_behaves_like "denied login"
-    end 
-
-    context "with no email in existence" do
-      let(:email) { "none@found.com"}
       let(:password) { "incorrect" }
       it_behaves_like "denied login"
     end
 
+    context "with no email in existence" do
+      let(:email) { "none@found.com" }
+      let(:password) { "incorrect" }
+      it_behaves_like "denied login"
+    end
+
+  end
+
+  describe "DELETE destroy" do
+    context "logged in" do
+      before do
+        sign_in create(:user)
+      end
+
+      it "returns a redirect" do
+        delete :destroy
+        expect(response).to be_redirect
+      end
+
+      it "sets the flash message" do
+        delete :destroy
+        expect(flash[:notice]).to_not be_blank
+        expect(flash[:notice]).to match(/logged out/)
+      end
+
+      it "removes the session[:user_id] key" do
+        session[:user_id] = 1
+        delete :destroy
+        expect(session[:user_id]).to be_nil
+      end
+
+      it "resets the session" do
+        expect(controller).to receive(:reset_session)
+        delete :destroy
+      end
+    end
   end
 
 end
