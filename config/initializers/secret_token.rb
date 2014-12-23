@@ -9,4 +9,4 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-Odot::Application.config.secret_key_base = '1c61c75e690811225a6d4528e60d274caf352b2bb7164124bcb7f9a0864d2ca3cef8e6a53a3ca36a73c4e830933213bac1997519cfc288ba2904ff9e6405c0c9'
+Odot::Application.config.secret_key_base = '2014126ae09b461bde5df78ace541a81480fd2c114f6b2a1d63e1ab797bccbd4f27589a2d8faa6f3e63a16de03e84ac82ba302e61c95439002f2480881d0b5fa'
